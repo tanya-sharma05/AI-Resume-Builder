@@ -8,33 +8,36 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production   # 🔥 THIS creates Deployments tab
+    environment: production
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 🔹 1. Create GitHub Deployment (START)
+      # 1️⃣ START deployment (save deployment_id)
       - name: Create GitHub Deployment
+        id: deploy_start
         uses: bobheadxi/deployments@v1
         with:
           step: start
           token: ${{ secrets.GITHUB_TOKEN }}
           env: production
-          ref: main
+          ref: ${{ github.sha }}
 
-      # 🔹 2. Trigger Render Deploy
+      # 2️⃣ Trigger Render
       - name: Trigger Render Deploy
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
           curl -X POST "$RENDER_DEPLOY_HOOK"
 
-      # 🔹 3. Mark Deployment SUCCESS
+      # 3️⃣ FINISH deployment using SAME deployment_id
       - name: Finish GitHub Deployment
+        if: success()
         uses: bobheadxi/deployments@v1
         with:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
           env: production
+          deployment_id: ${{ steps.deploy_start.outputs.deployment_id }}
           status: success
