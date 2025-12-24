@@ -1,4 +1,4 @@
-name: Deploy to Render
+name: Deploy to Render (with GitHub Deployments)
 
 on:
   push:
@@ -8,17 +8,33 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production   # 🔥 THIS creates Deployments tab
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 🔹 1. Create GitHub Deployment (START)
+      - name: Create GitHub Deployment
+        uses: bobheadxi/deployments@v1
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: production
+          ref: main
+
+      # 🔹 2. Trigger Render Deploy
       - name: Trigger Render Deploy
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
-          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
-            echo "RENDER_DEPLOY_HOOK is missing"
-            exit 1
-          fi
           curl -X POST "$RENDER_DEPLOY_HOOK"
+
+      # 🔹 3. Mark Deployment SUCCESS
+      - name: Finish GitHub Deployment
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: production
+          status: success
