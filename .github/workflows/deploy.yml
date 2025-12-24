@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+# 🔑 THIS IS THE FIX
+permissions:
+  contents: read
+  deployments: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -14,7 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 1️⃣ START deployment (save deployment_id)
+      # 1️⃣ START deployment
       - name: Create GitHub Deployment
         id: deploy_start
         uses: bobheadxi/deployments@v1
@@ -24,14 +29,14 @@ jobs:
           env: production
           ref: ${{ github.sha }}
 
-      # 2️⃣ Trigger Render
+      # 2️⃣ Trigger Render deploy
       - name: Trigger Render Deploy
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
           curl -X POST "$RENDER_DEPLOY_HOOK"
 
-      # 3️⃣ FINISH deployment using SAME deployment_id
+      # 3️⃣ FINISH deployment
       - name: Finish GitHub Deployment
         if: success()
         uses: bobheadxi/deployments@v1
