@@ -1,16 +1,11 @@
 import React from 'react'
+import { useSelector } from 'react-redux';
 import {Link} from "react-router-dom";
 
 function Hero() {
-    const [menuOpen, setMenuOpen] = React.useState(false);
+    const {user}= useSelector(state=>state.auth);
 
-    const logos = [
-        'https://saasly.prebuiltui.com/assets/companies-logo/instagram.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/framer.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/microsoft.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/huawei.svg',
-        'https://saasly.prebuiltui.com/assets/companies-logo/walmart.svg',
-    ]
+    const [menuOpen, setMenuOpen] = React.useState(false);
 
     return (
         <>
@@ -29,11 +24,14 @@ function Hero() {
                     </div>
 
                     <div className="flex gap-2">
-                        <Link to='/app?state=register' className="hidden md:block px-6 py-2 bg-green-500 hover:bg-green-700 active:scale-95 transition-all rounded-full text-white">
+                        <Link to='/app?state=register' className="hidden md:block px-6 py-2 bg-green-500 hover:bg-green-700 active:scale-95 transition-all rounded-full text-white" hidden={user}>
                             Get started
                         </Link>
-                        <Link to='/app?state=login' className="hidden md:block px-6 py-2 border active:scale-95 hover:bg-slate-50 transition-all rounded-full text-slate-700 hover:text-slate-900" >
+                        <Link to='/app?state=login' className="hidden md:block px-6 py-2 border active:scale-95 hover:bg-slate-50 transition-all rounded-full text-slate-700 hover:text-slate-900" hidden={user}>
                             Login
+                        </Link>
+                        <Link to='/app' className='hidden md:block px-8 py-2 bg-green-500 hover:bg-green-700 active:scale-95 transition-all rounded-full text-white' hidden={!user}>
+                            Dashboard
                         </Link>
                     </div>
 
@@ -98,12 +96,6 @@ function Hero() {
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-video size-5" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
                             <span>Try demo</span>
                         </button>
-                    </div>
-
-                    <p className="py-6 text-slate-600 mt-14">Trusting by leading brands, including</p>
-
-                    <div className="flex flex-wrap justify-between max-sm:justify-center gap-6 max-w-3xl w-full mx-auto py-4" id="logo-container">
-                        {logos.map((logo, index) => <img key={index} src={logo} alt="logo" className="h-6 w-auto max-w-xs" />)}
                     </div>
                 </div>
             </div>
